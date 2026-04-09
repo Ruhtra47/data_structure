@@ -1,48 +1,105 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "product.h"
+
 #include "vector.h"
+
+typedef struct Professor
+{
+    char name[32];
+    float reproved_ratio;
+    Vector *subjects;
+} Professor;
+
+typedef struct Subject
+{
+    char name[32];
+    int n_students;
+    int n_approved;
+    float reproved_ratio;
+} Subject;
+
+Professor *read_professor();
+Subject *read_subject();
 
 int main()
 {
-    char sort_option;
-    char name[MAX_NAME_LENGTH];
-    float price;
-    int n, qtd, sales;
+    Vector *professors = vector_construct();
 
+    int n;
     scanf("%d", &n);
 
-    Vector *products = vector_construct();
-
-    for (int i = 0; i < n; ++i)
+    float mean_ratio = 0.0;
+    for (int i = 0; i < n; i++)
     {
-        scanf("\n%[^\n]\n", name);
-        scanf("%f", &price);
-        scanf("%d", &qtd);
-        scanf("%d", &sales);
+        vector_push_back(professors, read_professor());
 
-        Product *product = product_constructor(name, price, qtd);
-        // product_print(product);
-        product_sell(product, sales);
-        vector_push_back(products, product);
+        Professor *p = (Professor *)vector_get(professors, i);
+        mean_ratio += p->reproved_ratio;
     }
-    scanf("\n%c", &sort_option);
 
-    if (sort_option == 'N')
-        vector_sort(products, product_compare_name);
-    else if (sort_option == 'P')
-        vector_sort(products, product_compare_price);
-    else if (sort_option == 'S')
-        vector_sort(products, product_compare_sales);
+    mean_ratio /= (float)n;
 
-    for (int i = 0; i < n; ++i)
-        product_print(vector_get(products, i));
+    for (int i = 0; i < n; i++)
+    {
+        Professor *p = (Professor *)vector_get(professors, i);
 
-    for (int i = 0; i < n; ++i)
-        product_destructor(vector_get(products, i));
+        if (p->reproved_ratio > mean_ratio)
+        {
+            printf("%s\n", p->name);
+        }
+    }
 
-    vector_destroy(products);
+    // Liberar a memoria
 
-    return 0;
+    for (int i = 0; i < n; i++)
+    {
+        Professor *p = (Professor *)vector_get(professors, i);
+
+        for (int j = 0; j < vector_size(p->subjects); j++)
+        {
+            Subject *s = (Subject *)vector_get(p->subjects, j);
+            free(s);
+        }
+        vector_destroy(p->subjects);
+        free(p);
+    }
+    vector_destroy(professors);
+}
+
+Professor *read_professor()
+{
+    Professor *p = (Professor *)malloc(sizeof(Professor));
+    scanf("%s", p->name);
+
+    int m;
+    scanf("%d", &m);
+
+    p->subjects = vector_construct();
+
+    p->reproved_ratio = 0;
+    for (int i = 0; i < m; i++)
+    {
+        vector_push_back(p->subjects, read_subject());
+
+        Subject *s = (Subject *)vector_get(p->subjects, i);
+        p->reproved_ratio += s->reproved_ratio;
+    }
+
+    p->reproved_ratio /= (float)m;
+
+    return p;
+}
+
+Subject *read_subject()
+{
+    Subject *s = (Subject *)malloc(sizeof(Subject));
+    scanf("%s", s->name);
+    scanf("%d", &s->n_students);
+    scanf("%d", &s->n_approved);
+
+    s->reproved_ratio = (float)s->n_approved / (float)s->n_students;
+    s->reproved_ratio = 1 - s->reproved_ratio;
+
+    return s;
 }
