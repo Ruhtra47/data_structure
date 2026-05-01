@@ -12,7 +12,7 @@ struct PriorityQueue
     compare_fn cmp;
 };
 
-PriorityQueue *pq_constructor(int cmp_fn(const void *, const void *))
+PriorityQueue *pq_constructor(compare_fn cmp_fn)
 {
     PriorityQueue *pq = (PriorityQueue *)malloc(sizeof(PriorityQueue));
 
@@ -29,8 +29,11 @@ void pq_push(PriorityQueue *pq, void *data)
         if (pq->cmp(data, vector_get(pq->data, i)) > 0)
         {
             vector_insert(pq->data, i, data);
+            return;
         }
     }
+
+    vector_insert(pq->data, vector_size(pq->data), data);
 }
 
 void *pq_pop(PriorityQueue *pq)
@@ -42,7 +45,7 @@ void *pq_pop(PriorityQueue *pq)
 
 int pq_size(PriorityQueue *pq)
 {
-    return vector_size(pq);
+    return vector_size(pq->data);
 }
 
 void pq_destroy(PriorityQueue *pq, void (*free_item)(void *))

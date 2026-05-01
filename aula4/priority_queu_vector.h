@@ -3,7 +3,7 @@
 
 typedef struct PriorityQueue PriorityQueue;
 
-PriorityQueue *pq_constructor(int cmp_fn(const void *, const void *));
+PriorityQueue *pq_constructor(compare_fn cmp_fn);
 void pq_push(PriorityQueue *pq, void *data);
 void *pq_pop(PriorityQueue *pq);
 int pq_size(PriorityQueue *pq);
