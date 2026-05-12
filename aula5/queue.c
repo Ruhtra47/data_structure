@@ -23,7 +23,7 @@ Queue *queue_constructor(int max_capacity)
     q->size = 0;
     q->start = 0;
     q->end = 0;
-    q->data = (void *)malloc(max_capacity * sizeof(void *));
+    q->data = (void **)malloc(max_capacity * sizeof(void *));
 
     return q;
 }
@@ -41,6 +41,7 @@ void *queue_remove(Queue *queue)
 {
     void *removed = queue->data[queue->start];
     queue->start = (queue->start + 1) % queue->max_capacity;
+    queue->size--;
 
     return removed;
 }
