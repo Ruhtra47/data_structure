@@ -11,6 +11,11 @@
 //     int size;
 // } ForwardList;
 
+// typedef struct ListIterator
+// {
+//     Node *current;
+// } ListIterator;
+
 /**
  * @brief Construct a new Linked List:: Linked List object
  *  Allocates memory for a new linked list and returns a pointer to it.
@@ -25,6 +30,7 @@ ForwardList *forward_list_construct()
     ForwardList *fl = (ForwardList *)malloc(sizeof(ForwardList));
 
     fl->head = NULL;
+    // fl->last = NULL;
     fl->size = 0;
 
     return fl;
@@ -57,8 +63,28 @@ void forward_list_push_front(ForwardList *l, data_type data)
 {
     Node *new_node = node_construct(data, l->head);
     l->head = new_node;
+    // if (l->size == 0)
+    // {
+    //     l->last = new_node;
+    // }
     l->size++;
 }
+
+// void forward_list_push_back(ForwardList *l, data_type data)
+// {
+//     Node *new_node = node_construct(data, NULL);
+//     if (l->size == 0)
+//     {
+//         l->head = new_node;
+//         l->last = new_node;
+//     }
+//     else
+//     {
+//         l->last->next = new_node;
+//         l->last = new_node;
+//     }
+//     l->size++;
+// }
 
 /**
  * @brief Print the elements of the linked list.
@@ -72,15 +98,15 @@ void forward_list_push_front(ForwardList *l, data_type data)
 void forward_list_print(ForwardList *l, void (*print_fn)(data_type))
 {
     Node *n = l->head;
-    printf("[");
+    // printf("[");
     while (n != NULL)
     {
-        print_fn(node_value(n));
-        n = node_next(n);
-        if (n != NULL)
-            printf(", ");
+        print_fn(n->value);
+        n = n->next;
+        // if (n != NULL)
+        //     printf(", ");
     }
-    printf("]\n");
+    // printf("]\n");
 }
 
 /**
@@ -105,10 +131,10 @@ data_type forward_list_get(ForwardList *l, int i)
 
     for (int j = 0; j < i; j++)
     {
-        n = node_next(n);
+        n = n->next;
     }
 
-    return node_value(n);
+    return n->value;
 }
 
 /**
@@ -121,12 +147,43 @@ data_type forward_list_get(ForwardList *l, int i)
  */
 data_type forward_list_pop_front(ForwardList *l)
 {
-    data_type removed = node_value(l->head);
+    data_type removed = l->head->value;
     Node *to_free = l->head;
-    l->head = node_next(l->head);
+    l->head = l->head->next;
     node_destroy(to_free);
     l->size--;
     return removed;
+}
+
+/**
+ * @brief Remove the node in the given index.
+ * @param l
+ * Pointer to the linked list.
+ * @return data_type
+ * Pointer to the data stored in the removed node.
+ *
+ */
+data_type forward_list_pop_index(ForwardList *l, int index)
+{
+    if (index >= l->size)
+    {
+        return NULL;
+    }
+
+    Node *n = l->head;
+
+    for (int i = 0; i < index - 1; i++)
+    {
+        n = n->next;
+    }
+
+    data_type val = n->next->value;
+    Node *temp = n->next;
+    n->next = n->next->next;
+    node_destroy(temp);
+    l->size--;
+
+    return val;
 }
 
 /**
@@ -143,8 +200,8 @@ ForwardList *forward_list_reverse(ForwardList *l)
     Node *n = l->head;
     while (n != NULL)
     {
-        forward_list_push_front(reversed, node_value(n));
-        n = node_next(n);
+        forward_list_push_front(reversed, n->value);
+        n = n->next;
     }
 
     return reversed;
@@ -164,7 +221,7 @@ void forward_list_clear(ForwardList *l)
     // Node *to_remove = l->head;
     // while (n != NULL)
     // {
-    //     n = node_next(n);
+    //     n = n->next;
     //     node_destroy(to_remove);
     //     to_remove = n;
     // }
@@ -184,17 +241,17 @@ void forward_list_clear(ForwardList *l)
  */
 void forward_list_remove(ForwardList *l, data_type val)
 {
-    if (node_value(l->head) == val)
+    if (l->head->value == val)
     {
         forward_list_pop_front(l);
     }
 
-    Node *cur = node_next(l->head);
+    Node *cur = l->head->next;
     Node *ant = l->head;
 
     while (cur != NULL)
     {
-        if (node_value(cur) == val)
+        if (cur->value == val)
         {
             Node *to_remove = cur;
             ant->next = cur->next;
@@ -233,9 +290,57 @@ void forward_list_cat(ForwardList *l, ForwardList *m)
     Node *n = m->head;
     for (int i = 0; i < m->size; i++)
     {
-        forward_list_push_front(l, node_value(n));
+        forward_list_push_front(l, n->value);
         n = n->next;
     }
+}
+
+Node *_split(Node *head)
+{
+    Node *fast = head;
+    Node *slow = head;
+
+    while (fast != NULL && fast->next != NULL)
+    {
+        fast = fast->next->next;
+        if (fast != NULL)
+            slow = slow->next;
+    }
+
+    Node *temp = slow->next;
+    slow->next = NULL;
+    return temp;
+}
+
+Node *_merge(Node *first, Node *second)
+{
+    if (first == NULL)
+        return second;
+    if (second == NULL)
+        return first;
+
+    if (first->value < second->value)
+    {
+        first->next = _merge(first->next, second);
+        return first;
+    }
+    else
+    {
+        second->next = _merge(first, second->next);
+        return second;
+    }
+}
+
+Node *_mergeSort(Node *head)
+{
+    if (head == NULL || head->next == NULL)
+        return head;
+
+    Node *second = _split(head);
+    head = _mergeSort(head);
+    second = _mergeSort(second);
+
+    return _merge(head, second);
 }
 
 /**
@@ -244,7 +349,10 @@ void forward_list_cat(ForwardList *l, ForwardList *m)
  * @param l
  * Pointer to the linked list.
  */
-void forward_list_sort(ForwardList *l);
+void forward_list_sort(ForwardList *l)
+{
+    l->head = _mergeSort(l->head);
+}
 
 /**
  * @brief Destroys the linked list.
@@ -255,6 +363,57 @@ void forward_list_sort(ForwardList *l);
  */
 void forward_list_destroy(ForwardList *l)
 {
-    forward_list_clear(l);
+    // forward_list_clear(l);
     free(l);
 }
+
+/**
+ * @brief Returns an iterator to the first node of the linked list.
+ * @param l
+ * Pointer to the linked list.
+ * @return ListIterator*
+ * Pointer to the iterator.
+ */
+// ListIterator *list_iterator_construct(ForwardList *l)
+// {
+//     ListIterator *it = (ListIterator *)malloc(sizeof(ListIterator));
+//     it->current = l->head;
+
+//     return it;
+// }
+
+// /**
+//  * @brief Free the memory allocated to the iterator.
+//  * @param it
+//  * Pointer to the iterator.
+//  */
+// void list_iterator_destroy(ListIterator *it)
+// {
+//     free(it);
+// }
+
+// /**
+//  * @brief Returns the data stored in the node and updates the iterator to point to the next node.
+//  * @param it
+//  * Pointer to the iterator.
+//  * @return data_type
+//  * Pointer to the data stored in the current node.
+//  */
+// data_type *list_iterator_next(ListIterator *it)
+// {
+//     data_type *val = &(it->current->value);
+//     it->current = it->current->next;
+
+//     return val;
+// }
+
+// /**
+//  * @brief Returns true if the iterator is over.
+//  * @param it
+//  * Pointer to the iterator.
+//  * @return 1 if the iterator is over, and 0 otherwise.
+//  */
+// bool list_iterator_is_over(ListIterator *it)
+// {
+//     return it->current == NULL ? 1 : 0;
+// }
