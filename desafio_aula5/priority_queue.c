@@ -6,8 +6,6 @@
 
 #define INITIAL_CAP 20
 
-typedef int (*cmp_fn)(const void *, const void *);
-
 // typedef struct PriorityQueue PriorityQueue;
 struct PriorityQueue
 {
@@ -46,7 +44,7 @@ void _heapify_up(PriorityQueue *pq, int i)
     if (i == 0)
         return;
 
-    if (pq->cmp(pq->data[i], pq->data[(i - 1) / 2]) <= 0)
+    if (pq->cmp(pq->data[i], pq->data[(i - 1) / 2]) < 0)
     {
         _swap(pq, i, (i - 1) / 2);
         _heapify_up(pq, (i - 1) / 2);
@@ -74,10 +72,10 @@ void _heapify_down(PriorityQueue *pq, int i)
     int right = 2 * i + 2;
     int max = i;
 
-    if (left < pq->size && pq->cmp(pq->data[left], pq->data[max]) > 0)
+    if (left < pq->size && pq->cmp(pq->data[left], pq->data[max]) < 0)
         max = left;
 
-    if (right < pq->size && pq->cmp(pq->data[right], pq->data[max]) > 0)
+    if (right < pq->size && pq->cmp(pq->data[right], pq->data[max]) < 0)
         max = right;
 
     if (max == i)

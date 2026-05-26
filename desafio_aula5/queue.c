@@ -39,6 +39,7 @@ void *queue_pop_front(Queue *q)
 {
     void *val = q->data[q->start];
     q->start = (q->start + 1) % q->max_capacity;
+    q->size--;
 
     return val;
 }
