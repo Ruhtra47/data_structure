@@ -170,6 +170,11 @@ data_type forward_list_pop_index(ForwardList *l, int index)
         return NULL;
     }
 
+    if (index == 0)
+    {
+        return forward_list_pop_front(l);
+    }
+
     Node *n = l->head;
 
     for (int i = 0; i < index - 1; i++)
