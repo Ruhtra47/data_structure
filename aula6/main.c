@@ -1,44 +1,63 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+#include "node.h"
 #include "forward_list.h"
 
-void print_int(data_type data)
+void print_data(data_type data)
 {
-    printf("%d", data);
+    printf("%s\n", (char *)data);
 }
 
 int main()
 {
-    int n, val;
+    int num_instructions;
+    scanf("%d", &num_instructions);
 
-    ForwardList *l = forward_list_construct();
+    ForwardList *list = forward_list_construct();
 
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < num_instructions; i++)
     {
-        scanf("%d", &val);
-        forward_list_push_front(l, val);
+        char command[20];
+
+        scanf("\n%s", command);
+
+        if (strcmp(command, "PUSH_FRONT") == 0)
+        {
+            // O que aconteceria aqui se trocássemos a alocação dinâmica por alocação estática? Faça o teste!
+            char *value = (char *)calloc(20, sizeof(char));
+            scanf("%s\n", value);
+
+            forward_list_push_front(list, value);
+        }
+        else if (strcmp(command, "POP") == 0)
+        {
+            int idx;
+            scanf("%d", &idx);
+
+            void *val = forward_list_pop_index(list, idx);
+            if (val == NULL)
+            {
+                printf("INVALID INDEX\n");
+                continue;
+            }
+
+            // PARA FAZER: libere o elemento retornado pelo pop
+            free(val);
+        }
     }
 
-    ForwardList *l2 = forward_list_construct();
+    forward_list_print(list, print_data);
 
-    scanf("%d", &n);
-    for (int i = 0; i < n; i++)
+    // PARA FAZER: a lista ainda pode ter elementos aqui. Libere-os.
+    while (forward_list_size(list) > 0)
     {
-        scanf("%d", &val);
-        forward_list_push_front(l2, val);
+        void *val = forward_list_pop_front(list);
+        free(val);
     }
 
-    forward_list_cat(l, l2);
-
-    forward_list_print(l, print_int);
-
-    forward_list_clear(l);
-    forward_list_clear(l2);
-
-    free(l);
-    free(l2);
+    forward_list_destroy(list);
 
     return 0;
 }
