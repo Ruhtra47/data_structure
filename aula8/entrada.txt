@@ -1,0 +1,5 @@
+257 4 13
+agua
+bola
+casa
+ceu
