@@ -4,7 +4,7 @@
 
 #include "node.h"
 
-// typedef int data_type;
+// typedef void *data_type;
 
 // typedef struct Node
 // {

@@ -70,22 +70,6 @@ void forward_list_push_front(ForwardList *l, data_type data)
     l->size++;
 }
 
-// void forward_list_push_back(ForwardList *l, data_type data)
-// {
-//     Node *new_node = node_construct(data, NULL);
-//     if (l->size == 0)
-//     {
-//         l->head = new_node;
-//         l->last = new_node;
-//     }
-//     else
-//     {
-//         l->last->next = new_node;
-//         l->last = new_node;
-//     }
-//     l->size++;
-// }
-
 /**
  * @brief Print the elements of the linked list.
  *  Print the elements of the linked list.

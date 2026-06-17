@@ -1,3 +1,4 @@
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,26 +30,28 @@ int main()
 
     scanf("%d", &n);
 
-    for(int i = 0; i < n; i++) {
-        char *name = malloc(sizeof(char) * 100);
-        int *age = malloc(sizeof(int));
+    for (int i = 0; i < n; i++)
+    {
+        char *name = (char *)malloc(sizeof(char) * 100);
+        int *age = (int *)malloc(sizeof(int));
         scanf("%s %d", name, age);
         void *prev = hash_table_set(h, name, age);
-        if(prev != NULL) {
+        if (prev != NULL)
+        {
             free(prev);
             free(name);
         }
     }
 
-    scanf("%d", &n);
+    HashTableIterator *it = hash_table_iterator(h);
 
-    for(int i = 0; i < n; i++) {
-        char *name = malloc(sizeof(char) * 100);
-        scanf("%s", name);
-        printf("%d\n", *(int *)hash_table_get(h, name));
-        free(name);
+    while (!hash_table_iterator_is_over(it))
+    {
+        HashTableItem *pair = hash_table_iterator_next(it);
+        printf("%s: %d\n", (char *)pair->key, *(int *)pair->val);
     }
 
+    hash_table_iterator_destroy(it);
     hash_table_destroy(h);
 
     return 0;

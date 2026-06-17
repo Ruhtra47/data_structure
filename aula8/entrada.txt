@@ -1,5 +1,51 @@
-257 4 13
-agua
-bola
-casa
-ceu
+32
+Emilly 78
+Anthony 17
+Cecilia 11
+Yuri 55
+Lucca 38
+Calebe 77
+Daniel 17
+Melissa 69
+Laura 89
+Melina 70
+Lucas 36
+Juan 39
+Ayla 94
+Heloisa 74
+Maite 75
+Gabriel 13
+Perola 46
+Nathan 69
+Rafael 58
+Valentina 15
+Joana 29
+Thiago 64
+Valentina 43
+Nicole 75
+Giovanna 40
+Emanuel 96
+Olivia 63
+Julio 38
+Erick 25
+Antonio 41
+Daniel 16
+Emilly 25
+17
+Juan
+Giovanna
+Heloisa
+Cecilia
+Lucca
+Valentina
+Antonio
+Emanuel
+Yuri
+Perola
+Melissa
+Gabriel
+Julio
+Emilly
+Lucas
+Daniel
+Laura
