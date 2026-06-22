@@ -3,17 +3,17 @@
 #include <string.h>
 
 #include "hash.h"
-#include "forward_list.h"
+#include "list.h"
 
 // typedef struct HashTable HashTable;
+
 struct HashTable
 {
-    int table_size;
-    int n_elements;
+    ForwardList **buckets;
     HashFunction hash_fn;
     CmpFunction cmp_fn;
-
-    ForwardList **buckets;
+    int table_size;
+    int n_elements;
 };
 
 // typedef int (*HashFunction)(HashTable *, void *);
@@ -28,90 +28,107 @@ struct HashTable
 // typedef struct HashTableIterator HashTableIterator;
 struct HashTableIterator
 {
-    HashTable *table;
+    HashTable *hash_table;
     int bucket_index;
-    Node *node_cur;
-    int table_elem;
+    Node *cur_node;
+    int cur_element;
 };
 
 // constroi a hash
 HashTable *hash_table_construct(int table_size, HashFunction hash_fn, CmpFunction cmp_fn)
 {
-    HashTable *ht = (HashTable *)malloc(sizeof(HashTable));
+    HashTable *h = (HashTable *)malloc(sizeof(HashTable));
 
-    ht->table_size = table_size;
-    ht->n_elements = 0;
-    ht->hash_fn = hash_fn;
-    ht->cmp_fn = cmp_fn;
-    ht->buckets = (ForwardList **)calloc(table_size, sizeof(ForwardList *));
+    h->hash_fn = hash_fn;
+    h->cmp_fn = cmp_fn;
+    h->table_size = table_size;
+    h->n_elements = 0;
 
-    return ht;
+    h->buckets = (ForwardList **)calloc(table_size, sizeof(ForwardList *));
+    for (int i = 0; i < table_size; i++)
+    {
+        h->buckets[i] = forward_list_construct();
+    }
+
+    return h;
 }
 
 // funcao para insercao/atualizacao de pares chave-valor em O(1).
 // Se a chave ja existir, atualiza o valor e retorna o valor antigo para permitir desalocacao.
 void *hash_table_set(HashTable *h, void *key, void *val)
 {
-    int hash = h->hash_fn(h, key);
+    int hash_val = h->hash_fn(h, key);
 
-    if (h->buckets[hash] == NULL)
-        h->buckets[hash] = forward_list_construct();
+    ForwardList *list = h->buckets[hash_val];
+    Node *n = list->head;
 
-    Node *n = h->buckets[hash]->head;
     while (n != NULL)
     {
-        HashTableItem *cur_item = (HashTableItem *)n->value;
-        if (!h->cmp_fn(key, cur_item->key))
+        HashTableItem *item = (HashTableItem *)n->value;
+
+        if (!h->cmp_fn(key, item->key))
         {
-            void *old_val = cur_item->val;
-            cur_item->val = val;
-            return old_val;
+            void *old_value = item->val;
+            item->val = val;
+            return old_value;
         }
+
         n = n->next;
     }
+
     HashTableItem *new_item = (HashTableItem *)malloc(sizeof(HashTableItem));
     new_item->key = key;
     new_item->val = val;
+
     h->n_elements++;
-    forward_list_push_front(h->buckets[hash], new_item);
+
+    forward_list_push_front(list, new_item);
     return NULL;
 }
 
 // retorna o valor associado com a chave key ou NULL se ela nao existir em O(1).
 void *hash_table_get(HashTable *h, void *key)
 {
-    int hash = h->hash_fn(h, key);
+    int hash_val = h->hash_fn(h, key);
 
-    if (h->buckets[hash] == NULL)
-        return NULL;
+    ForwardList *list = h->buckets[hash_val];
+    Node *n = list->head;
 
-    Node *n = h->buckets[hash]->head;
     while (n != NULL)
     {
-        HashTableItem *cur_item = (HashTableItem *)n->value;
-        if (!h->cmp_fn(key, cur_item->key))
+        HashTableItem *item = (HashTableItem *)n->value;
+
+        if (!h->cmp_fn(key, item->key))
         {
-            return cur_item->val;
+            return item->val;
         }
+
         n = n->next;
     }
+
     return NULL;
 }
 
 // remove o par chave-valor e retorna o valor ou NULL se nao existir tal chave em O(1).
 void *hash_table_pop(HashTable *h, void *key)
 {
-    int hash = h->hash_fn(h, key);
+    int hash_val = h->hash_fn(h, key);
 
-    Node *prev = h->buckets[hash]->head;
-    Node *cur = h->buckets[hash]->head->next;
+    ForwardList *list = h->buckets[hash_val];
 
-    if (!h->cmp_fn(((HashTableItem *)prev->value)->key, key))
+    // compara head
+    HashTableItem *item_head = (HashTableItem *)list->head->value;
+    if (!h->cmp_fn(item_head->key, key))
     {
-        void *value = ((HashTableItem *)prev->value)->val;
-        h->buckets[hash]->head = cur;
-        return value;
+        void *old_value = item_head->val;
+        Node *to_remove = list->head;
+        list->head = list->head->next;
+        node_destroy(to_remove);
+        return old_value;
     }
+
+    Node *cur = list->head->next;
+    Node *prev = list->head;
 
     while (cur != NULL)
     {
@@ -119,13 +136,15 @@ void *hash_table_pop(HashTable *h, void *key)
 
         if (!h->cmp_fn(item->key, key))
         {
-            void *value = item->val;
+            void *value_removed = item->val;
+
             prev->next = cur->next;
-            cur = cur->next;
-            return value;
+            node_destroy(cur);
+            return value_removed;
         }
-        prev = prev->next;
+
         cur = cur->next;
+        prev = prev->next;
     }
     return NULL;
 }
@@ -172,10 +191,10 @@ HashTableIterator *hash_table_iterator(HashTable *h)
 {
     HashTableIterator *it = (HashTableIterator *)malloc(sizeof(HashTableIterator));
 
-    it->table = h;
+    it->hash_table = h;
     it->bucket_index = 0;
-    it->node_cur = h->buckets[it->bucket_index]->head;
-    it->table_elem = 0;
+    it->cur_node = h->buckets[it->bucket_index]->head;
+    it->cur_element = 0;
 
     return it;
 }
@@ -183,12 +202,22 @@ HashTableIterator *hash_table_iterator(HashTable *h)
 // retorna 1 se o iterador chegou ao fim da tabela hash ou 0 caso contrario
 int hash_table_iterator_is_over(HashTableIterator *it)
 {
-    return (it->table->table_size == it->table_elem) ? 1 : 0;
+    return (it->cur_element == it->hash_table->n_elements) ? 1 : 0;
 }
 
 // retorna o proximo par chave valor da tabela hash
 HashTableItem *hash_table_iterator_next(HashTableIterator *it)
 {
+    while (it->cur_node == NULL)
+    {
+        it->bucket_index++;
+        it->cur_node = it->hash_table->buckets[it->bucket_index]->head;
+    }
+
+    HashTableItem *item = (HashTableItem *)it->cur_node->value;
+    it->cur_node = it->cur_node->next;
+    it->cur_element++;
+    return item;
 }
 
 // desaloca o iterador da tabela hash

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "forward_list.h"
+#include "list.h"
 #include "node.h"
 
 // typedef struct
@@ -30,7 +30,6 @@ ForwardList *forward_list_construct()
     ForwardList *fl = (ForwardList *)malloc(sizeof(ForwardList));
 
     fl->head = NULL;
-    // fl->last = NULL;
     fl->size = 0;
 
     return fl;
@@ -63,10 +62,6 @@ void forward_list_push_front(ForwardList *l, data_type data)
 {
     Node *new_node = node_construct(data, l->head);
     l->head = new_node;
-    // if (l->size == 0)
-    // {
-    //     l->last = new_node;
-    // }
     l->size++;
 }
 
@@ -82,15 +77,11 @@ void forward_list_push_front(ForwardList *l, data_type data)
 void forward_list_print(ForwardList *l, void (*print_fn)(data_type))
 {
     Node *n = l->head;
-    // printf("[");
     while (n != NULL)
     {
         print_fn(n->value);
         n = n->next;
-        // if (n != NULL)
-        //     printf(", ");
     }
-    // printf("]\n");
 }
 
 /**
@@ -206,15 +197,6 @@ ForwardList *forward_list_reverse(ForwardList *l)
  */
 void forward_list_clear(ForwardList *l)
 {
-    // Node *n = l->head;
-    // Node *to_remove = l->head;
-    // while (n != NULL)
-    // {
-    //     n = n->next;
-    //     node_destroy(to_remove);
-    //     to_remove = n;
-    // }
-
     forward_list_pop_front(l);
     while (l->head != NULL)
         forward_list_pop_front(l);
@@ -363,46 +345,46 @@ void forward_list_destroy(ForwardList *l)
  * @return ListIterator*
  * Pointer to the iterator.
  */
-// ListIterator *list_iterator_construct(ForwardList *l)
-// {
-//     ListIterator *it = (ListIterator *)malloc(sizeof(ListIterator));
-//     it->current = l->head;
+ListIterator *list_iterator_construct(ForwardList *l)
+{
+    ListIterator *it = (ListIterator *)malloc(sizeof(ListIterator));
+    it->current = l->head;
 
-//     return it;
-// }
+    return it;
+}
 
-// /**
-//  * @brief Free the memory allocated to the iterator.
-//  * @param it
-//  * Pointer to the iterator.
-//  */
-// void list_iterator_destroy(ListIterator *it)
-// {
-//     free(it);
-// }
+/**
+ * @brief Free the memory allocated to the iterator.
+ * @param it
+ * Pointer to the iterator.
+ */
+void list_iterator_destroy(ListIterator *it)
+{
+    free(it);
+}
 
-// /**
-//  * @brief Returns the data stored in the node and updates the iterator to point to the next node.
-//  * @param it
-//  * Pointer to the iterator.
-//  * @return data_type
-//  * Pointer to the data stored in the current node.
-//  */
-// data_type *list_iterator_next(ListIterator *it)
-// {
-//     data_type *val = &(it->current->value);
-//     it->current = it->current->next;
+/**
+ * @brief Returns the data stored in the node and updates the iterator to point to the next node.
+ * @param it
+ * Pointer to the iterator.
+ * @return data_type
+ * Pointer to the data stored in the current node.
+ */
+data_type *list_iterator_next(ListIterator *it)
+{
+    data_type *val = &(it->current->value);
+    it->current = it->current->next;
 
-//     return val;
-// }
+    return val;
+}
 
-// /**
-//  * @brief Returns true if the iterator is over.
-//  * @param it
-//  * Pointer to the iterator.
-//  * @return 1 if the iterator is over, and 0 otherwise.
-//  */
-// bool list_iterator_is_over(ListIterator *it)
-// {
-//     return it->current == NULL ? 1 : 0;
-// }
+/**
+ * @brief Returns true if the iterator is over.
+ * @param it
+ * Pointer to the iterator.
+ * @return 1 if the iterator is over, and 0 otherwise.
+ */
+bool list_iterator_is_over(ListIterator *it)
+{
+    return it->current == NULL ? 1 : 0;
+}
