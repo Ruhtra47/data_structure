@@ -1,5 +1,9 @@
-4
-filipe 32
-lucas 20
-joao 46
-filipe 33
+1374 981 31
+7
+agua
+bola
+casa
+casas
+aguado
+bolada
+casamento

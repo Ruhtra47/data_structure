@@ -3,56 +3,35 @@
 #include <stdlib.h>
 #include <string.h>
 #include "hash.h"
+#include "vector.h"
 
-int hash_str(HashTable *h, void *data)
+int hash_str(int seed, int update_val, int table_size, void *data)
 {
     char *str = (char *)data;
+    int hash_val = 0, base = seed;
+    int random_val = update_val;
+    int size = strlen(str);
 
-    long hash_val = 0;
-    int base = 127;
-
-    for (size_t i = 0; i < strlen(str); i++)
-        hash_val = (base * hash_val + str[i]) % hash_table_size(h);
+    for (int i = 0; i < size; i++)
+    {
+        hash_val = (hash_val * random_val + str[i]) % table_size;
+        random_val = (random_val * base) % (table_size - 1);
+    }
 
     return hash_val;
 }
 
-int cmp_str(void *a, void *b)
-{
-    return strcmp((char *)a, (char *)b);
-}
-
 int main()
 {
-    HashTable *h = hash_table_construct(11, hash_str, cmp_str);
+    int seed, update_val, table_size, n;
+    scanf("%d %d %d %d", &seed, &update_val, &table_size, &n);
 
-    int n;
-
-    scanf("%d", &n);
-
+    char str[50];
     for (int i = 0; i < n; i++)
     {
-        char *name = (char *)malloc(sizeof(char) * 100);
-        int *age = (int *)malloc(sizeof(int));
-        scanf("%s %d", name, age);
-        void *prev = hash_table_set(h, name, age);
-        if (prev != NULL)
-        {
-            free(prev);
-            free(name);
-        }
+        scanf("%s", str);
+        printf("%d\n", hash_str(seed, update_val, table_size, str));
     }
-
-    HashTableIterator *it = hash_table_iterator(h);
-
-    while (!hash_table_iterator_is_over(it))
-    {
-        HashTableItem *pair = hash_table_iterator_next(it);
-        printf("%s: %d\n", (char *)pair->key, *(int *)pair->val);
-    }
-
-    hash_table_iterator_destroy(it);
-    hash_table_destroy(h);
 
     return 0;
 }

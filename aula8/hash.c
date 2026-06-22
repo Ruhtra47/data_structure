@@ -225,3 +225,18 @@ void hash_table_iterator_destroy(HashTableIterator *it)
 {
     free(it);
 }
+
+Vector *hash_to_vector(HashTable *h)
+{
+    Vector *v = vector_construct();
+
+    HashTableIterator *it = hash_table_iterator(h);
+    while (!hash_table_iterator_is_over(it))
+    {
+        HashTableItem *item = hash_table_iterator_next(it);
+        vector_push_back(v, item);
+    }
+
+    hash_table_iterator_destroy(it);
+    return v;
+}
