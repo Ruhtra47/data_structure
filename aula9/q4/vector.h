@@ -11,7 +11,7 @@ typedef struct
     int allocated;
 } Vector;
 
-typedef int (*compare_fn)(void *a, void *b);
+typedef int (*compare_fn)(const void *a, const void *b);
 
 // Cria um vetor vazio
 Vector *vector_construct();

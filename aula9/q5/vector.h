@@ -2,7 +2,7 @@
 #ifndef _DATA_STRUCTURES_VECTOR_H_
 #define _DATA_STRUCTURES_VECTOR_H_
 
-typedef void *data_type;
+typedef int data_type;
 
 typedef struct
 {
@@ -11,32 +11,25 @@ typedef struct
     int allocated;
 } Vector;
 
-typedef int (*compare_fn)(void *a, void *b);
-
 // Cria um vetor vazio
 Vector *vector_construct();
 
 // Adiciona um elemento no final do vetor
 void vector_push_back(Vector *v, data_type val);
 
-// Retorna o i-ésimo elemento do vetor
+// Retorna o i-Ã©simo elemento do vetor
 data_type vector_get(Vector *v, int i);
 
-// Atribui o valor val ao i-ésimo elemento do vetor
+// Atribui o valor val ao i-Ã©simo elemento do vetor
 void vector_set(Vector *v, int i, data_type val);
 
 // Retorna o tamanho do vetor
 int vector_size(Vector *v);
 
 // Retorna o indice do primeiro elemento com valor val. Retorna -1 se nao encontrado.
-int vector_find(Vector *v, data_type val, compare_fn compare);
+int vector_find(Vector *v, data_type val);
 
-data_type vector_max(Vector *v, compare_fn compare);
-data_type vector_min(Vector *v, compare_fn compare);
-int vector_argmax(Vector *v, compare_fn compare);
-int vector_argmin(Vector *v, compare_fn compare);
-
-// Remove o i-ésimo elemento do vetor.
+// Remove o i-Ã©simo elemento do vetor.
 data_type vector_remove(Vector *v, int i);
 
 // Remove o primeiro elemento
@@ -48,19 +41,19 @@ data_type vector_pop_back(Vector *v);
 // Insere o elemento na i-esima posicao
 void vector_insert(Vector *v, int i, data_type val);
 
-// Troca os elementos das posições i e j (i vira j e j vira i)
+// Troca os elementos das posiÃ§Ãµes i e j (i vira j e j vira i)
 void vector_swap(Vector *v, int i, int j);
 
 // Ordena o vetor in-place (sem criar um novo vetor)
-void vector_sort(Vector *v, compare_fn compare);
+void vector_sort(Vector *v);
 
 // Retorna o indice de val usando busca binaria. Retorna -1 se nao encontrado.
-int vector_binary_search(Vector *v, data_type val, compare_fn compare);
+int vector_binary_search(Vector *v, data_type val);
 
 // Inverte o vetor in-place (sem criar um novo vetor)
 void vector_reverse(Vector *v);
 
-// Cria uma cópia do vector e dos valores de seus atributos.
+// Cria uma cÃ³pia do vector e dos valores de seus atributos.
 Vector *vector_copy(Vector *v);
 
 // Remove todos os elementos de v
