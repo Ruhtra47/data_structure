@@ -209,8 +209,8 @@ void vector_clear(Vector *v)
 {
     for (int i = 0; i < v->size; i++)
     {
-        // free(v->data[i]);
-        // v->data[i] = 0;
+    // free(v->data[i]);
+    // v->data[i] = 0;
         vector_pop_back(v);
     }
 }

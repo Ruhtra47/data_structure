@@ -42,17 +42,40 @@ int main()
         binary_tree_add(bt, new_int(val), new_int(val));
     }
 
-    int m;
-    scanf("%d", &m);
+    Vector *v_inorder = binary_tree_inorder_traversal_recursive(bt);
+    Vector *v_preorder = binary_tree_preorder_traversal_recursive(bt);
+    Vector *v_postorder = binary_tree_postorder_traversal_recursive(bt);
 
-    for (int i = 0; i < m; i++)
+    printf("InOrder recursivo: ");
+    for (int i = 0; i < vector_size(v_inorder); i++)
     {
-        int val;
-        scanf("%d", &val);
-        binary_tree_remove(bt, &val);
+        KeyValPair *kvp = vector_get(v_inorder, i);
+        int *val = (int *)kvp->value;
+        printf("%d ", *val);
     }
+    printf("\n");
 
-    binary_tree_print(bt);
+    printf("PreOrder recursivo: ");
+    for (int i = 0; i < vector_size(v_preorder); i++)
+    {
+        KeyValPair *kvp = vector_get(v_preorder, i);
+        int *val = (int *)kvp->value;
+        printf("%d ", *val);
+    }
+    printf("\n");
+
+    printf("PostOrder recursivo: ");
+    for (int i = 0; i < vector_size(v_postorder); i++)
+    {
+        KeyValPair *kvp = vector_get(v_postorder, i);
+        int *val = (int *)kvp->value;
+        printf("%d ", *val);
+    }
+    printf("\n");
+
+    vector_destroy(v_inorder);
+    vector_destroy(v_preorder);
+    vector_destroy(v_postorder);
 
     binary_tree_destroy(bt);
 
