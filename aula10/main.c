@@ -49,27 +49,30 @@ int main()
     printf("InOrder recursivo: ");
     for (int i = 0; i < vector_size(v_inorder); i++)
     {
-        KeyValPair *kvp = vector_get(v_inorder, i);
+        KeyValPair *kvp = (KeyValPair *)vector_get(v_inorder, i);
         int *val = (int *)kvp->value;
         printf("%d ", *val);
+        key_val_pair_destroy(kvp);
     }
     printf("\n");
 
     printf("PreOrder recursivo: ");
     for (int i = 0; i < vector_size(v_preorder); i++)
     {
-        KeyValPair *kvp = vector_get(v_preorder, i);
+        KeyValPair *kvp = (KeyValPair *)vector_get(v_preorder, i);
         int *val = (int *)kvp->value;
         printf("%d ", *val);
+        key_val_pair_destroy(kvp);
     }
     printf("\n");
 
     printf("PostOrder recursivo: ");
     for (int i = 0; i < vector_size(v_postorder); i++)
     {
-        KeyValPair *kvp = vector_get(v_postorder, i);
+        KeyValPair *kvp = (KeyValPair *)vector_get(v_postorder, i);
         int *val = (int *)kvp->value;
         printf("%d ", *val);
+        key_val_pair_destroy(kvp);
     }
     printf("\n");
 

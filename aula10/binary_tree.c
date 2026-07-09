@@ -385,7 +385,7 @@ Vector *binary_tree_inorder_traversal(BinaryTree *bt)
         }
 
         current = (Node *)vector_pop_back(stack);
-        vector_push_back(result, current->pair);
+        vector_push_back(result, key_val_pair_construct(current->pair->key, current->pair->value));
         current = current->right;
     }
     vector_destroy(stack);
@@ -407,7 +407,7 @@ Vector *binary_tree_preorder_traversal(BinaryTree *bt)
     {
         Node *current = (Node *)vector_pop_back(stack);
 
-        vector_push_back(result, current->pair);
+        vector_push_back(result, key_val_pair_construct(current->pair->key, current->pair->value));
 
         if (current->right != NULL)
             vector_push_back(stack, current->right);
@@ -448,7 +448,7 @@ Vector *binary_tree_postorder_traversal(BinaryTree *bt)
     while (vector_size(s2) > 0)
     {
         Node *current = (Node *)vector_pop_back(s2);
-        vector_push_back(result, current->pair);
+        vector_push_back(result, key_val_pair_construct(current->pair->key, current->pair->value));
     }
 
     vector_destroy(s1);
@@ -472,7 +472,7 @@ Vector *binary_tree_levelorder_traversal(BinaryTree *bt)
     {
         Node *current = (Node *)vector_pop_front(queue);
 
-        vector_push_back(result, current->pair);
+        vector_push_back(result, key_val_pair_construct(current->pair->key, current->pair->value));
 
         if (current->left != NULL)
             vector_push_back(queue, current->left);
@@ -491,7 +491,7 @@ void inorder_recursive(Node *node, Vector *v)
         return;
 
     inorder_recursive(node->left, v);
-    vector_push_back(v, node->pair);
+    vector_push_back(v, key_val_pair_construct(node->pair->key, node->pair->value));
     inorder_recursive(node->right, v);
 }
 
@@ -500,7 +500,7 @@ void preorder_recursive(Node *node, Vector *v)
     if (node == NULL)
         return;
 
-    vector_push_back(v, node->pair);
+    vector_push_back(v, key_val_pair_construct(node->pair->key, node->pair->value));
     preorder_recursive(node->left, v);
     preorder_recursive(node->right, v);
 }
@@ -512,7 +512,7 @@ void postorder_recursive(Node *node, Vector *v)
 
     postorder_recursive(node->left, v);
     postorder_recursive(node->right, v);
-    vector_push_back(v, node->pair);
+    vector_push_back(v, key_val_pair_construct(node->pair->key, node->pair->value));
 }
 
 Vector *binary_tree_inorder_traversal_recursive(BinaryTree *bt)
