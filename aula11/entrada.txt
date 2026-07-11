@@ -1,0 +1,23 @@
+22 3
+SET davi professor faz a prova com tema de copa
+SET beatriz esta na especificacao bernardo
+SET arthur professor vc podia dar ponto extra
+SET mutz queria saber a fofoca do bernardo
+SET igor palavra com 7 letras que comeca com C e se refere a um objeto do ceu
+SET guilherme prof deixa eu faltar mais umas vezes
+GET arthur
+GET davi
+GET mutz
+GET mutz
+GET beatriz
+GET mutz
+SET mutz uma palma
+SET beatriz bernardo cade o post do pet
+SET guilherme aprendi arrays circulares durante a prova
+GET beatriz
+GET beatriz
+GET davi
+GET guilherme
+GET igor
+GET arthur
+GET mutz
